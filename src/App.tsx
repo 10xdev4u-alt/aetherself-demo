@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { IdentityPanel } from "./IdentityPanel.js";
+import { MessageBubble } from "./MessageBubble.js";
+import { ChatInput } from "./ChatInput.js";
 import "./styles.css";
 
 interface Message {
@@ -8,17 +11,16 @@ interface Message {
   timestamp: number;
 }
 
+const DEMO_DID = "did:aetherself:demo123abc456def789ghi012jkl345mno";
+
 export function App() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
 
-  const send = () => {
-    if (!input.trim()) return;
-    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: input, timestamp: Date.now() };
+  const handleSend = (content: string) => {
+    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content, timestamp: Date.now() };
     setMessages((prev) => [...prev, userMsg]);
-    setInput("");
     setTimeout(() => {
-      const aiMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: `Echo: ${input}`, timestamp: Date.now() };
+      const aiMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: `Echo: ${content}`, timestamp: Date.now() };
       setMessages((prev) => [...prev, aiMsg]);
     }, 500);
   };
@@ -28,19 +30,14 @@ export function App() {
       <header>
         <h1>🔮 AetherSelf Demo</h1>
         <p>Your AI identity in action</p>
-        <div className="identity-badge"><span className="dot" /> Connected</div>
       </header>
+      <IdentityPanel did={DEMO_DID} connected={true} />
       <div className="chat-area">
         {messages.map((m) => (
-          <div key={m.id} className={`message ${m.role}`}>
-            <div className="bubble">{m.content}</div>
-          </div>
+          <MessageBubble key={m.id} role={m.role} content={m.content} timestamp={m.timestamp} />
         ))}
       </div>
-      <div className="input-bar">
-        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder="Type a message..." />
-        <button onClick={send}>Send</button>
-      </div>
+      <ChatInput onSend={handleSend} />
     </div>
   );
 }
