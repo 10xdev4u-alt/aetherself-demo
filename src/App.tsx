@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./styles.css";
 
 interface Message {
   id: string;
@@ -16,7 +17,6 @@ export function App() {
     const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: input, timestamp: Date.now() };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
-    // ponytail: simulated response for demo
     setTimeout(() => {
       const aiMsg: Message = { id: crypto.randomUUID(), role: "assistant", content: `Echo: ${input}`, timestamp: Date.now() };
       setMessages((prev) => [...prev, aiMsg]);
@@ -24,28 +24,22 @@ export function App() {
   };
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 20, fontFamily: "system-ui" }}>
-      <h1>🔮 AetherSelf Demo</h1>
-      <div style={{ border: "1px solid #333", borderRadius: 8, padding: 16, minHeight: 400, marginBottom: 16 }}>
+    <div className="app">
+      <header>
+        <h1>🔮 AetherSelf Demo</h1>
+        <p>Your AI identity in action</p>
+        <div className="identity-badge"><span className="dot" /> Connected</div>
+      </header>
+      <div className="chat-area">
         {messages.map((m) => (
-          <div key={m.id} style={{ textAlign: m.role === "user" ? "right" : "left", margin: "8px 0" }}>
-            <span style={{ background: m.role === "user" ? "#0066ff" : "#333", padding: "8px 12px", borderRadius: 12, display: "inline-block" }}>
-              {m.content}
-            </span>
+          <div key={m.id} className={`message ${m.role}`}>
+            <div className="bubble">{m.content}</div>
           </div>
         ))}
       </div>
-      <div style={{ display: "flex", gap: 8 }}>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Type a message..."
-          style={{ flex: 1, padding: 12, borderRadius: 8, border: "1px solid #333", background: "#111", color: "#fff" }}
-        />
-        <button onClick={send} style={{ padding: "12px 24px", borderRadius: 8, border: "none", background: "#0066ff", color: "#fff", cursor: "pointer" }}>
-          Send
-        </button>
+      <div className="input-bar">
+        <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder="Type a message..." />
+        <button onClick={send}>Send</button>
       </div>
     </div>
   );
